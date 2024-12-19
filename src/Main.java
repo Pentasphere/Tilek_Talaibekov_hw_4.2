@@ -2,13 +2,13 @@ import java.util.Objects;
 import java.util.Random;
 
 public class Main {
-    public static int bossHealth = 900;
+    public static int bossHealth = 2000;
     public static int bossDamage = 50;
     public static String bossDefence;
-    public static int[] heroesHealth = {253, 353, 453, 303, 103, 153};
-    public static int[] heroesDamage = {10, 15, 20, 0, 25, 30};
+    public static int[] heroesHealth = {253, 353, 453, 303, 503, 103, 203, 153};
+    public static int[] heroesDamage = {10, 15, 20, 0, 5, 25, 20, 30};
     public static String[] heroesAttackType =
-            {"Physical", "Magical", "Kinetic", "Medic", "Lucky", "Thor"};
+            {"Physical", "Magical", "Kinetic", "Medic", "Golem", "Lucky", "Berserk", "Thor"};
     public static int roundNumber = 0;
 
     public static void main(String[] args) {
@@ -28,14 +28,40 @@ public class Main {
         roundNumber++;
         chooseBossDefence();
         bossHits();
-        lucky();
         medicTreat();
+        golem();    //golem added
+        lucky();    //lucky fixed
+        berserk();  //berserk added
         heroesHit();
         thor();
         printStatistics();
     }
 
+    public static void berserk() {
+        for (int i = 0; i < heroesHealth.length; i++) {
+            if (heroesAttackType[i].equals("Berserk") && heroesHealth[i] > 0 && bossDamage > 0) {
+                Random random = new Random();
+                int berserkCoeff = random.nextInt(20) + 1;
+                heroesHealth[i] = heroesHealth[i] + berserkCoeff;
+                bossHealth = bossHealth - berserkCoeff;
+                System.out.println("Berserk blocked and revert: " + berserkCoeff);
+            }
+        }
+    }
 
+    public static void golem() {
+        for (int i = 0; i < heroesHealth.length; i++) {
+            if (heroesAttackType[i].equals("Golem") && heroesHealth[i] > 0) {
+                heroesHealth[i] = heroesHealth[i] - (heroesHealth.length - 1) * bossDamage / 5;
+                /*if (!Objects.equals(heroesAttackType[i], "Golem") && heroesHealth[i] > 0) {
+                    heroesHealth[i] = heroesHealth[i] + bossDamage / 5;
+                }*/
+            } else if (!Objects.equals(heroesAttackType[i], "Golem") && heroesHealth[i] > 0) {
+
+                heroesHealth[i] = heroesHealth[i] + bossDamage / 5;
+            }
+        }
+    }
 
     public static void thor() {
         for (int i = 0; i < heroesHealth.length; i++) {
@@ -58,7 +84,7 @@ public class Main {
                 Random random = new Random();
                 boolean luckyHit = random.nextBoolean();
                 if (luckyHit) {
-                    heroesHealth[i] = heroesHealth[i] + bossDamage;
+                    heroesHealth[i] = heroesHealth[i] + bossDamage - bossDamage / 5;
                     System.out.println("Lucky dodged");
                 }
             }
@@ -149,5 +175,6 @@ public class Main {
             System.out.println(heroesAttackType[i] + " health: " + heroesHealth[i]
                     + " damage: " + heroesDamage[i]);
         }
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     }
 }
